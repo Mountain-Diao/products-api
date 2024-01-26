@@ -1,7 +1,6 @@
 package com.bo;
 
 import com.dao.ProductRepository;
-import com.dao.ProductRepositoryImpl;
 import com.dao.TimestampsRepository;
 import com.exception.NonHalalException;
 import com.mapper.ProductMapper;
