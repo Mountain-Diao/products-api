@@ -1,12 +1,15 @@
 package com.bo;
 
-import com.dao.ProductRepository;
-import com.dao.TimestampsRepository;
+import com.dao.MysqlProductsRepository;
+import com.dao.MysqlTimestampsRepository;
 import com.exception.NonHalalException;
 import com.mapper.ProductMapper;
+import com.model.Product;
 import com.model.RawProduct;
 import com.model.Timestamps;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,13 +20,13 @@ import java.util.stream.Collectors;
 @Service
 public class ProductProcessor {
 
-    private final ProductRepository productRepository;
-    private final TimestampsRepository timestampsRepository;
+    private final MysqlProductsRepository mysqlProductsRepository;
+    private final MysqlTimestampsRepository mysqlTimestampsRepository;
 
     @Autowired
-    public ProductProcessor(ProductRepository productRepository, TimestampsRepository timestampsRepository){
-        this.productRepository = productRepository;
-        this.timestampsRepository = timestampsRepository;
+    public ProductProcessor(MysqlProductsRepository mysqlProductsRepository, MysqlTimestampsRepository mysqlTimestampsRepository){
+        this.mysqlProductsRepository = mysqlProductsRepository;
+        this.mysqlTimestampsRepository = mysqlTimestampsRepository;
     }
 
     @Transactional
@@ -33,15 +36,15 @@ public class ProductProcessor {
         if(rawProducts.size() == 1){
             var product = ProductMapper.INSTANCE.mapRawProductToProductDto(rawProducts.get(0));
             timestamp.setInserted_by("Maki");
-            timestamp.setProduct_name(product.getProduct_name());
+            timestamp.setProduct_name(product.getProductName());
             timestamp.setTiming(new Time(System.currentTimeMillis()));
-            timestampsRepository.insertTimestamp(timestamp);
+            mysqlTimestampsRepository.save(timestamp);
 
-            if(product.getProduct_name().equalsIgnoreCase("Pork")){
+            if(product.getProductName().equalsIgnoreCase("Pork")){
                 throw new NonHalalException("No pork can be inserted into this database!!!");
             }
 
-            productRepository.insertAllProducts(List.of(product));
+            mysqlProductsRepository.save(product);
 
         } else {
             var concatProductString = rawProducts.stream()
@@ -51,7 +54,7 @@ public class ProductProcessor {
             timestamp.setInserted_by("Maki");
             timestamp.setProduct_name(concatProductString);
             timestamp.setTiming(new Time(System.currentTimeMillis()));
-            timestampsRepository.insertTimestamp(timestamp);
+            mysqlTimestampsRepository.save(timestamp);
 
             {
                 var hasPork = rawProducts.stream()
@@ -67,17 +70,15 @@ public class ProductProcessor {
                     .map(ProductMapper.INSTANCE::mapRawProductToProductDto)
                     .collect(Collectors.toList());
 
-            productRepository.insertAllProducts(products);
+            mysqlProductsRepository.saveAll(products);
         }
 
     }
 
     @Transactional
-    public List<RawProduct> getAllProducts(int page, int size){
-        return productRepository.getAllProducts(page, size)
-                .stream()
-                .map(ProductMapper.INSTANCE::mapProductToRawProductDto)
-                .collect(Collectors.toList());
+    public Page<Product> getAllProducts(int page, int size){
+        var pageable = PageRequest.of(page, size);
+        return mysqlProductsRepository.findAll(pageable);
     }
 
 }

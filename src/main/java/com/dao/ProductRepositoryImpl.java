@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+@Deprecated
 public class ProductRepositoryImpl implements ProductRepository{
     private final JdbcTemplate jdbcTemplate;
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
@@ -47,10 +48,10 @@ public class ProductRepositoryImpl implements ProductRepository{
                 new Object[]{size, offset},
                 (rs, rowNum) -> {
                     Product product = new Product();
-                    product.setProduct_id(rs.getLong("product_id"));
-                    product.setProduct_name(rs.getString("product_name"));
-                    product.setProduct_price(rs.getBigDecimal("product_price"));
-                    product.setProduct_origin(rs.getString("product_origin"));
+                    product.setProductId(rs.getLong("product_id"));
+                    product.setProductName(rs.getString("product_name"));
+                    product.setProductPrice(rs.getBigDecimal("product_price"));
+                    product.setProductOrigin(rs.getString("product_origin"));
                     return product;
                 }
         );
@@ -64,9 +65,9 @@ public class ProductRepositoryImpl implements ProductRepository{
             @Override
             public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
                 Product product = products.get(i);
-                preparedStatement.setString(1, product.getProduct_name());
-                preparedStatement.setBigDecimal(2, product.getProduct_price());
-                preparedStatement.setString(3, product.getProduct_origin());
+                preparedStatement.setString(1, product.getProductName());
+                preparedStatement.setBigDecimal(2, product.getProductPrice());
+                preparedStatement.setString(3, product.getProductOrigin());
             }
 
             @Override

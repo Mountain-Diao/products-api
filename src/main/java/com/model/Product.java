@@ -1,5 +1,6 @@
 package com.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,43 +10,47 @@ import java.math.BigDecimal;
 @Table(name = "products")
 public class Product {
     @Id
-    private long product_id;
+    @Column(name = "product_id")
+    private long productId;
 
-    private String product_name;
+    @Column(name = "product_name")
+    private String productName;
 
-    private BigDecimal product_price;
+    @Column(name = "product_price")
+    private BigDecimal productPrice;
 
-    private String product_origin;
+    @Column(name = "product_origin")
+    private String productOrigin;
 
-    public String getProduct_origin() {
-        return product_origin;
+    public String getProductOrigin() {
+        return productOrigin;
     }
 
-    public void setProduct_origin(String product_origin) {
-        this.product_origin = product_origin;
+    public void setProductOrigin(String productOrigin) {
+        this.productOrigin = productOrigin;
     }
 
-    public long getProduct_id() {
-        return product_id;
+    public long getProductId() {
+        return productId;
     }
 
-    public void setProduct_id(long product_id) {
-        this.product_id = product_id;
+    public void setProductId(long productId) {
+        this.productId = productId;
     }
 
-    public String getProduct_name() {
-        return product_name;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProduct_name(String product_name) {
-        this.product_name = product_name;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public BigDecimal getProduct_price() {
-        return product_price;
+    public BigDecimal getProductPrice() {
+        return productPrice;
     }
 
-    public void setProduct_price(BigDecimal product_price) {
-        this.product_price = product_price;
+    public void setProductPrice(BigDecimal productPrice) {
+        this.productPrice = productPrice;
     }
 }

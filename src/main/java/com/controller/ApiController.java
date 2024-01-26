@@ -2,7 +2,7 @@ package com.controller;
 
 import com.bo.ProductProcessor;
 import com.dao.ExternalApiDao;
-import com.dao.ProductRepositoryImpl;
+import com.dao.MysqlProductsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.model.RawProduct;
@@ -24,7 +24,7 @@ public class ApiController {
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
     private static final String MESSAGE = "message";
     private final ProductProcessor processor;
-    private final ProductRepositoryImpl repository;
+    private final MysqlProductsRepository mysqlProductsRepository;
     private final ExternalApiDao externalApiDao;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -32,9 +32,9 @@ public class ApiController {
     private HttpHeaders headers = new HttpHeaders();
 
     @Autowired
-    public ApiController(ProductProcessor processor, ProductRepositoryImpl repository, ExternalApiDao externalApiDao){
+    public ApiController(ProductProcessor processor, MysqlProductsRepository mysqlProductsRepository, ExternalApiDao externalApiDao){
         this.processor = processor;
-        this.repository = repository;
+        this.mysqlProductsRepository = mysqlProductsRepository;
         this.externalApiDao = externalApiDao;
     }
 
@@ -79,9 +79,7 @@ public class ApiController {
             logger.trace("Successfully retrieve products on page = {} with size = {} with http status = {}",page, size, HttpStatus.OK.value());
             headers.add(MESSAGE, "Product(s) retrieved successfully");
 
-            return new ResponseEntity<>(new ResponseEnvelope(
-                    "Product(s) retrieved successfully", HttpStatus.OK.value(), processor.getAllProducts(page, size)),
-                    headers, HttpStatus.OK.value());
+            return new ResponseEntity<>(processor.getAllProducts(page, size), headers, HttpStatus.OK.value());
         }
     }
 
@@ -92,18 +90,17 @@ public class ApiController {
                                                 @RequestParam BigDecimal productPrice, @RequestParam String productOrigin){
         logger.trace("ENDPOINT CALLED: /products/update");
         logger.trace("Input params: productId = {}, productName = {}, productPrice = {}, productOrigin = {}", productId, productName, productPrice, productOrigin);
-        var isExists = repository.checkIfExist(productId);
+        var products = mysqlProductsRepository.findByProductId(productId);
 
 
-        if(isExists){
-            repository.updateProduct(productId, productName, productPrice, productOrigin);
-            headers.add(MESSAGE, String.format("Product with ID: %s updated successfully", productId));
+        if(!products.isEmpty()){
+            var rowsUpdated = mysqlProductsRepository.updateProduct(productId, productName, productPrice, productOrigin);
+            var msg = String.format("Product with ID: %s updated successfully, number of rows updated %d", productId, rowsUpdated);
+            headers.add(MESSAGE, msg);
 
-            logger.trace("Product with ID = {} updated successfully with http status = {}", productId, HttpStatus.OK.value());
+            logger.trace("Product with ID = {} updated successfully with http status = {}, number of rows updated {}", productId, HttpStatus.OK.value(), rowsUpdated);
 
-            return new ResponseEntity<>(new ResponseEnvelope(
-                    String.format("Product with ID: %s updated successfully", productId), HttpStatus.OK.value()),
-                    headers, HttpStatus.OK.value());
+            return new ResponseEntity<>(new ResponseEnvelope(msg, HttpStatus.OK.value()), headers, HttpStatus.OK.value());
         } else {
             headers.add(MESSAGE, String.format("Product with ID = %s does not exists", productId));
 

@@ -5,6 +5,7 @@ import com.model.Product;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Deprecated
 public interface ProductRepository {
     Boolean checkIfExist(long id);
     List<Product> getAllProducts(Integer page, Integer size);

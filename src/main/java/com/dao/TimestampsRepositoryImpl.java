@@ -1,20 +1,15 @@
 package com.dao;
 
 import com.controller.ApiController;
-import com.model.Product;
 import com.model.Timestamps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-
 @Repository
+@Deprecated
 public class TimestampsRepositoryImpl implements TimestampsRepository{
     private final JdbcTemplate jdbcTemplate;
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
