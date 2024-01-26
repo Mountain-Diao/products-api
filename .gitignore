@@ -5,3 +5,10 @@
 application.properties
 logging.txt
 api-service.iml
+=======
+# Default ignored files
+/shelf/
+/.idea/
+/target/
+application.properties
+>>>>>>> 9b78231e81059796fe7878db4bf3234dfa5db353
