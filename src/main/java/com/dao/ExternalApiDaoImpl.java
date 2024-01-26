@@ -19,6 +19,7 @@ public class ExternalApiDaoImpl implements ExternalApiDao{
     public ExternalApiDaoImpl(OrdersApiConfig config){
         this.config = config;
     }
+
     @Override
     public boolean callOrdersApi(long id) throws IOException{
         try (CloseableHttpClient httpClient = HttpClients.createDefault()){

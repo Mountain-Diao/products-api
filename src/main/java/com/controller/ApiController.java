@@ -39,12 +39,26 @@ public class ApiController {
     }
 
     @GetMapping("/products/has-orders")
-    public Boolean getProducts(@RequestParam long id){
+    public ResponseEntity<Object> getProducts(@RequestParam long id){
+        logger.trace("ENDPOINT CALLED: /products/has-orders");
+        logger.trace("Input params: id = {}", id);
         try{
-            return externalApiDao.callOrdersApi(id);
+            var hasRow = externalApiDao.callOrdersApi(id);
+
+            headers.add(MESSAGE, "Successfully checked!");
+
+            return hasRow ? new ResponseEntity<>(new ResponseEnvelope(
+                    "This product id has orders!", HttpStatus.OK.value()),
+                    headers, HttpStatus.OK.value()) :
+                    new ResponseEntity<>(new ResponseEnvelope(
+                    "This product id has no orders!", HttpStatus.OK.value()),
+                    headers, HttpStatus.OK.value());
         } catch (IOException e){
+            e.printStackTrace();
             logger.error("Unable to call Orders API!");
-            return false;
+            return new ResponseEntity<>(new ResponseEnvelope(
+                    "Unable to call orders API!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    headers, HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
 
     }
