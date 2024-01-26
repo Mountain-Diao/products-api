@@ -2,7 +2,7 @@
 /shelf/
 /.idea/
 /target/
-#application.properties
+application.properties
 logging.txt
 api-service.iml
 
