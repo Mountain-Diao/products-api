@@ -77,7 +77,7 @@ public class ProductProcessor {
 
     @Transactional
     public Page<Product> getAllProducts(int page, int size){
-        var pageable = PageRequest.of(page, size);
+        var pageable = PageRequest.of(page - 1 , size);
         return mysqlProductsRepository.findAll(pageable);
     }
 

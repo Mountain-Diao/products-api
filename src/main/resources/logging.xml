@@ -1,11 +1,30 @@
-<configuration>
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>application.txt</file>
-        <append>true</append>
-        <encoder>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</encoder>
-    </appender>
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
 
-    <root level="info">
-        <appender-ref ref="FILE"/>
-    </root>
-</configuration>
+<Appenders>
+    <File name="File" fileName="logs.log">
+        <PatternLayout>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </PatternLayout>
+    </File>
+</Appenders>
+
+<Loggers>
+    <Root level="info">
+        <AppenderRef ref="File"/>
+    </Root>
+</Loggers>
+
+</Configuration>
+
+<!--<configuration>-->
+<!--    <appender name="FILE" class="ch.qos.logback.core.FileAppender">-->
+<!--        <file>application.txt</file>-->
+<!--        <append>true</append>-->
+<!--        <encoder>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</encoder>-->
+<!--    </appender>-->
+
+<!--    <root level="info">-->
+<!--        <appender-ref ref="FILE"/>-->
+<!--    </root>-->
+<!--</configuration>-->

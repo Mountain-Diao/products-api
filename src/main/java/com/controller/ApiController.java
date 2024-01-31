@@ -38,6 +38,7 @@ public class ApiController {
         this.externalApiDao = externalApiDao;
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/products/has-orders")
     public ResponseEntity<Object> getProducts(@RequestParam long id){
         logger.trace("ENDPOINT CALLED: /products/has-orders");
@@ -63,6 +64,7 @@ public class ApiController {
 
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/products/page")
     public ResponseEntity<Object> getAllProducts(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size){
         logger.trace("ENDPOINT CALLED: /products/page");
@@ -83,18 +85,22 @@ public class ApiController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PutMapping(value = "/products/update",
             produces = { "application/json" }
     )
-    public ResponseEntity<Object> updateProduct(@RequestParam long productId, @RequestParam String productName,
-                                                @RequestParam BigDecimal productPrice, @RequestParam String productOrigin){
+    public ResponseEntity<Object> updateProduct(@RequestParam(name = "product_id") long productId, @RequestParam(name = "product_code") String productCode, @RequestParam(name = "product_name") String productName,
+                                                @RequestParam(name = "product_price") BigDecimal productPrice, @RequestParam(name = "product_origin") String productOrigin,
+                                                @RequestParam(name = "product_category") String productCategory, @RequestParam(name = "product_brand") String productBrand,
+                                                @RequestParam(name = "product_description") String productDescription){
         logger.trace("ENDPOINT CALLED: /products/update");
         logger.trace("Input params: productId = {}, productName = {}, productPrice = {}, productOrigin = {}", productId, productName, productPrice, productOrigin);
         var products = mysqlProductsRepository.findByProductId(productId);
 
 
         if(!products.isEmpty()){
-            var rowsUpdated = mysqlProductsRepository.updateProduct(productId, productName, productPrice, productOrigin);
+            var rowsUpdated = mysqlProductsRepository.updateProduct(productId, productCode, productName, productPrice,
+                    productOrigin, productCategory, productBrand, productDescription);
             var msg = String.format("Product with ID: %s updated successfully, number of rows updated %d", productId, rowsUpdated);
             headers.add(MESSAGE, msg);
 
@@ -114,6 +120,7 @@ public class ApiController {
 
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/insert")
     public ResponseEntity<String> postProducts(@RequestBody List<RawProduct> rawProducts){
         String rawProductJson = "";

@@ -13,8 +13,20 @@ public class Product {
     @Column(name = "product_id")
     private long productId;
 
+    @Column(name = "product_code")
+    private String productCode;
+
     @Column(name = "product_name")
     private String productName;
+
+    @Column(name = "product_category")
+    private String productCategory;
+
+    @Column(name = "product_brand")
+    private String productBrand;
+
+    @Column(name = "product_description")
+    private String productDescription;
 
     @Column(name = "product_price")
     private BigDecimal productPrice;
@@ -52,5 +64,37 @@ public class Product {
 
     public void setProductPrice(BigDecimal productPrice) {
         this.productPrice = productPrice;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
+
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public String getProductBrand() {
+        return productBrand;
+    }
+
+    public void setProductBrand(String productBrand) {
+        this.productBrand = productBrand;
+    }
+
+    public String getProductDescription() {
+        return productDescription;
+    }
+
+    public void setProductDescription(String productDescription) {
+        this.productDescription = productDescription;
     }
 }

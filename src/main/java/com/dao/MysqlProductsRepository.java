@@ -36,9 +36,15 @@ public interface MysqlProductsRepository extends JpaRepository<Product, Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Product SET product_name = :productName, product_price = :productPrice, product_origin = :productOrigin WHERE product_id = :productId")
+    @Query("UPDATE Product SET product_code = :productCode, product_name = :productName, " +
+            "product_price = :productPrice, product_origin = :productOrigin, product_category = :productCategory, " +
+            "product_brand = :productBrand, product_description = :productDescription WHERE product_id = :productId")
     int updateProduct(@Param("productId") Long productId,
+                      @Param("productCode") String productCode,
                       @Param("productName") String productName,
                       @Param("productPrice") BigDecimal productPrice,
-                      @Param("productOrigin") String productOrigin);
+                      @Param("productOrigin") String productOrigin,
+                      @Param("productCategory") String productCategory,
+                      @Param("productBrand") String productBrand,
+                      @Param("productDescription") String productDescription);
 }
