@@ -89,11 +89,11 @@ public class ApiController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/product")
-    public ResponseEntity<Object> getAllProduct(@RequestParam(defaultValue = "1") String code){
+    public ResponseEntity<Object> getAllProduct(@RequestParam(defaultValue = "1") long id){
         logger.trace("ENDPOINT CALLED: /product");
-        logger.trace("Input params: code = {}", code);
+        logger.trace("Input params: code = {}", id);
 
-        var product = mysqlProductsRepository.findByProductCode(code);
+        var product = mysqlProductsRepository.findByProductId(id);
 
         if(!product.isEmpty()) {
             return new ResponseEntity<>(product.get(0), headers, HttpStatus.OK.value());
