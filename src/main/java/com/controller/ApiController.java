@@ -136,8 +136,44 @@ public class ApiController {
                     String.format("Product with ID = %s does not exists", productId), HttpStatus.NOT_MODIFIED.value()),
                     headers, HttpStatus.NOT_MODIFIED.value());
         }
+    }
 
+    @CrossOrigin(origins = "*")
+    @PutMapping("/products/update/body")
+    public ResponseEntity<Object> updateProduct(@RequestParam(name = "product_id") long productId, @RequestBody RawProduct rawProducts) {
+        String rawProductJson = "";
 
+        try {
+            rawProductJson = objectMapper.writeValueAsString(rawProducts);
+        } catch (JsonProcessingException e) {
+            logger.error("Unable to convert List of RawProducts to JSON", e);
+        }
+
+        logger.trace("ENDPOINT CALLED: /products/update");
+        logger.trace("Input params: productId = {}, body = {}", productId, rawProductJson);
+
+        var products = mysqlProductsRepository.findByProductId(productId);
+
+        if (!products.isEmpty()) {
+            var rowsUpdated = mysqlProductsRepository.updateProduct(productId, rawProducts.getProductCode(),
+                    rawProducts.getProductName(), rawProducts.getProductPrice(), rawProducts.getProductOrigin(),
+                    rawProducts.getProductCategory(), rawProducts.getProductBrand(), rawProducts.getProductDescription());
+
+            var msg = String.format("Product with ID: %s updated successfully, number of rows updated %d", productId, rowsUpdated);
+            headers.add(MESSAGE, msg);
+
+            logger.trace("Product with ID = {} updated successfully with http status = {}, number of rows updated {}", productId, HttpStatus.OK.value(), rowsUpdated);
+
+            return new ResponseEntity<>(new ResponseEnvelope(msg, HttpStatus.OK.value()), headers, HttpStatus.OK.value());
+        } else {
+            headers.add(MESSAGE, String.format("Product with ID = %s does not exists", productId));
+
+            logger.trace("Product with ID = {} was not updated with http status = {}", productId, HttpStatus.NOT_MODIFIED.value());
+
+            return new ResponseEntity<>(new ResponseEnvelope(
+                    String.format("Product with ID = %s does not exists", productId), HttpStatus.NOT_MODIFIED.value()),
+                    headers, HttpStatus.NOT_MODIFIED.value());
+        }
     }
 
     @CrossOrigin(origins = "*")
