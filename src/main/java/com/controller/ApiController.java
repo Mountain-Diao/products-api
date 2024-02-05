@@ -5,6 +5,7 @@ import com.dao.ExternalApiDao;
 import com.dao.MysqlProductsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.model.Product;
 import com.model.RawProduct;
 import com.model.ResponseEnvelope;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -86,13 +88,31 @@ public class ApiController {
     }
 
     @CrossOrigin(origins = "*")
+    @GetMapping("/product")
+    public ResponseEntity<Object> getAllProduct(@RequestParam(defaultValue = "1") String code){
+        logger.trace("ENDPOINT CALLED: /product");
+        logger.trace("Input params: code = {}", code);
+
+        var product = mysqlProductsRepository.findByProductCode(code);
+
+        if(!product.isEmpty()) {
+            return new ResponseEntity<>(product.get(0), headers, HttpStatus.OK.value());
+        } else {
+            return new ResponseEntity<>(new Product(), headers, HttpStatus.OK.value());
+//            return new ResponseEntity<>(new ResponseEnvelope(
+//                    String.format("Product with ID = %s does not exists", code), HttpStatus.NOT_MODIFIED.value()),
+//                    headers, HttpStatus.NOT_MODIFIED.value());
+        }
+    }
+
+    @CrossOrigin(origins = "*")
     @PutMapping(value = "/products/update",
             produces = { "application/json" }
     )
-    public ResponseEntity<Object> updateProduct(@RequestParam(name = "product_id") long productId, @RequestParam(name = "product_code") String productCode, @RequestParam(name = "product_name") String productName,
-                                                @RequestParam(name = "product_price") BigDecimal productPrice, @RequestParam(name = "product_origin") String productOrigin,
-                                                @RequestParam(name = "product_category") String productCategory, @RequestParam(name = "product_brand") String productBrand,
-                                                @RequestParam(name = "product_description") String productDescription){
+    public ResponseEntity<Object> updateProduct(@RequestParam(name = "product_id") long productId, @RequestParam(name = "product_code", required = false) String productCode, @RequestParam(name = "product_name", required = false) String productName,
+                                                @RequestParam(name = "product_price", required = false) BigDecimal productPrice, @RequestParam(name = "product_origin", required = false) String productOrigin,
+                                                @RequestParam(name = "product_category", required = false) String productCategory, @RequestParam(name = "product_brand", required = false) String productBrand,
+                                                @RequestParam(name = "product_description", required = false) String productDescription){
         logger.trace("ENDPOINT CALLED: /products/update");
         logger.trace("Input params: productId = {}, productName = {}, productPrice = {}, productOrigin = {}", productId, productName, productPrice, productOrigin);
         var products = mysqlProductsRepository.findByProductId(productId);
@@ -139,5 +159,25 @@ public class ApiController {
         logger.trace("Product(s) was(were) inserted successfully with http status = {}", HttpStatus.CREATED.value());
 
         return new ResponseEntity<>("Products inserted successfully", HttpStatus.CREATED);
+    }
+
+    @CrossOrigin(origins = "*")
+    @DeleteMapping("/remove")
+    @Transactional
+    public ResponseEntity<String> deleteProduct(@RequestParam(name = "product_id") long productId){
+        var product = mysqlProductsRepository.findByProductId(productId);
+
+        logger.trace("ENDPOINT CALLED: /remove");
+        logger.trace("Input params: productId = {}", productId);
+
+        if(!product.isEmpty()){
+            mysqlProductsRepository.deleteProductByProductId(productId);
+
+            return new ResponseEntity<>(String.format("Product with ID = %s deleted successfully!", productId), HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(String.format("Product with ID = %s does not exists!", productId), HttpStatus.NOT_FOUND);
+        }
+
+
     }
 }

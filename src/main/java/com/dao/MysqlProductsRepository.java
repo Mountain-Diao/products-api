@@ -20,7 +20,11 @@ public interface MysqlProductsRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByProductId(Long id);
 
+    List<Product> findByProductCode(String id);
+
     Page<Product> findAll(Pageable pageable);
+
+    void deleteProductByProductId(Long id);
 
 //    @Transactional
 //    @Modifying
